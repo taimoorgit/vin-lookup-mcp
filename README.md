@@ -124,6 +124,12 @@ uv run python -m vin_mcp.server \
   --summary-only
 ```
 
+For a quick end-to-end CLI smoke test, run:
+
+```bash
+./scripts/smoke_test.sh
+```
+
 ## Example MCP config
 
 For an MCP client that launches local stdio servers, the config will look roughly like this:
