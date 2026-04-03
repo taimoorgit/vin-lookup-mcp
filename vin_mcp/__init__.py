@@ -1,0 +1,1 @@
+"""VIN MCP server package."""
