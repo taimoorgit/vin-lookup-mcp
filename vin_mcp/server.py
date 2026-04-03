@@ -13,7 +13,7 @@ VIN_PATTERN = re.compile(r"^[A-HJ-NPR-Z0-9]{17}$")
 VPIC_API_URL = "https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValuesExtended/{vin}?format=json"
 CANADIAN_SPECS_API_URL = "https://vpic.nhtsa.dot.gov/api/vehicles/GetCanadianVehicleSpecifications/?{query}"
 PROTOCOL_VERSION = "2025-03-26"
-SERVER_INFO = {"name": "vin-mcp", "version": "0.1.0"}
+SERVER_INFO = {"name": "vin-lookup-mcp", "version": "0.1.0"}
 
 
 def _normalize_vin(vin: str) -> str:
@@ -411,7 +411,7 @@ def _serve_stdio() -> None:
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="VIN MCP server and direct VIN decoder CLI.",
+        description="vin-lookup-mcp server and direct VIN decoder CLI.",
     )
     parser.add_argument(
         "--decode",

@@ -1,25 +1,22 @@
-# VIN MCP
+# vin-lookup-mcp
 
-`vin-mcp` is a small MCP server that decodes car VINs with the free public NHTSA vPIC API.
+`vin-lookup-mcp` is a small MCP server for NHTSA vPIC lookups.
 
-It is dependency-free and runs on Python 3.14+, and this repo is set up to use `uv` and your `uv`-managed Python.
+It runs on Python 3.14+ with `uv` and exposes:
 
-When your MCP host sees a prompt with a VIN and decides to call the tool, this server returns:
-
-- a compact vehicle summary
-- the raw decoded fields from NHTSA
-- any API error code or warning text returned by vPIC
+- VIN decoding via `decode_vin`
+- Canadian vehicle specs via `get_canadian_vehicle_specifications`
 
 ## Free API
 
-This project uses NHTSA's public vPIC VIN decoder API:
+This project uses NHTSA's public vPIC API:
 
 - API docs: https://vpic.nhtsa.dot.gov/api/Home
 - Decoder UI: https://vpic.nhtsa.dot.gov/decoder/
 
 No API key is required.
 
-## Tool
+## MCP tools
 
 The server exposes two MCP tools:
 
@@ -31,13 +28,23 @@ The server exposes two MCP tools:
 - normalizes the VIN
 - validates that it is a 17-character VIN
 - calls `DecodeVinValuesExtended`
-- returns both a summary and the raw decoded payload
+- returns:
+  - `vin`
+  - `summary`
+  - `raw`
+  - `api_error_code`
+  - `api_error_text`
 
 `get_canadian_vehicle_specifications`:
 
 - calls NHTSA's `GetCanadianVehicleSpecifications`
 - accepts `year` and `make`, with optional `model` and `units`
-- returns a compact summary plus the full Canadian-specs result set
+- returns:
+  - `search_criteria`
+  - `count`
+  - `message`
+  - `summary`
+  - `results`
 
 ## Project structure
 
@@ -73,6 +80,8 @@ export PATH="$HOME/.local/bin:$PATH"
 ```
 
 ## Run locally
+
+Start the MCP stdio server:
 
 ```bash
 uv run python -m vin_mcp.server
@@ -137,6 +146,12 @@ Replace the Python path with your real project virtualenv path.
 - vPIC is strongest for vehicles intended for sale or import into the United States.
 - Canadian specifications come from the dedicated vPIC `GetCanadianVehicleSpecifications` endpoint.
 - NHTSA notes that VIN decoding is for model years 1981 and newer.
-- Whether the tool is called automatically depends on the MCP host and the model. The server exposes the capability; the host decides when to invoke it.
+- The server currently advertises two tools through MCP tool metadata, and the MCP client or model decides when to call them.
 - This server implements the MCP stdio protocol directly, so it does not need the Python MCP SDK.
 - Because the project has no external dependencies, `uv sync` should work without internet once the local Python is available.
+
+## Why I built this
+
+I was shopping for cars and wanted to talk to ChatGPT about them by pasting the VIN number rather than the full model information.
+
+As an TechOps Eng at Stripe, we use a lot of MCP servers so I wanted to learn how to build my own. I only used Codex for this.

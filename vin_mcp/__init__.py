@@ -1,1 +1,1 @@
-"""VIN MCP server package."""
+"""vin-lookup-mcp server package."""
