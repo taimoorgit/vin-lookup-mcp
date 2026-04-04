@@ -1,10 +1,17 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "vin-lookup-mcp"
 version = "0.1.0"
-description = "An MCP server that decodes vehicle VINs using the free NHTSA vPIC API."
+description = "MCP server for decoding VINs and fetching Canadian vehicle specs from NHTSA vPIC."
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = ["mcp[cli]"]
 
-[tool.uv]
-package = false
+[project.scripts]
+vin-lookup-mcp = "vin_lookup_mcp.server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["vin_lookup_mcp"]

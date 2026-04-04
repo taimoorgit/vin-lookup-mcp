@@ -1,11 +1,45 @@
 # vin-lookup-mcp
 
-`vin-lookup-mcp` is a small MCP server for NHTSA vPIC lookups.
+`vin-lookup-mcp` is an MCP server for NHTSA vPIC lookups. It exposes two tools:
 
-It runs on Python 3.14+ with `uv` and exposes:
+- `decode_vin` for 17-character VIN decoding
+- `get_canadian_vehicle_specifications` for Canadian-market vehicle specs
 
-- VIN decoding via `decode_vin`
-- Canadian vehicle specs via `get_canadian_vehicle_specifications`
+## Example prompt
+
+```text
+Use only the registered MCP tool `decode_vin` for each VIN below. Do not inspect local files, search my home directory, or invoke `python`/`uv` directly. Decode each VIN with the MCP tool and give me a short summary for each one.
+
+5YJ3E1EB5KF123456
+1N4AL21E87C118393
+1P8ZA1279SZ215470
+1HGCM82633A004352
+1FTFW1EF1EKE12345
+JHMFA16586S012345
+2HGFG3B59FH512345
+3VWFE21C04M000001
+1G1JC5244T7258391
+JTDKB20U093123456
+```
+
+## Install for Codex
+
+Assuming you already have `uv` and Python 3.14 installed:
+
+```bash
+git clone git@github.com:taimoorgit/vin-lookup-mcp.git
+cd vin-lookup-mcp
+uv sync
+codex mcp add vin-lookup-mcp -- "$(pwd)/.venv/bin/python" -m vin_lookup_mcp.server
+```
+
+You can confirm Codex sees it with:
+
+```bash
+codex mcp list
+```
+
+In Codex chat, `/mcp` should show `vin-lookup-mcp` with the two tools listed.
 
 ## Free API
 
@@ -46,51 +80,12 @@ The server exposes two MCP tools:
   - `summary`
   - `results`
 
-## Project structure
-
-```text
-.
-├── pyproject.toml
-├── README.md
-└── vin_mcp
-    ├── __init__.py
-    └── server.py
-```
-
-## Install with uv
-
-Create a virtual environment with `uv`:
-
-```bash
-uv venv --python 3.14
-uv sync
-```
-
-If `uv` is installed in `~/.local/bin` and is not on your shell `PATH`, either run it with the full path:
-
-```bash
-~/.local/bin/uv venv --python 3.14
-~/.local/bin/uv sync
-```
-
-or add this to your shell config:
-
-```bash
-export PATH="$HOME/.local/bin:$PATH"
-```
-
 ## Run locally
 
 Start the MCP stdio server:
 
 ```bash
-uv run python -m vin_mcp.server
-```
-
-If `uv` is not on your `PATH` yet:
-
-```bash
-~/.local/bin/uv run python -m vin_mcp.server
+uv run python -m vin_lookup_mcp.server
 ```
 
 ## Test without MCP
@@ -98,19 +93,19 @@ If `uv` is not on your `PATH` yet:
 You can decode a VIN directly from the command line:
 
 ```bash
-uv run python -m vin_mcp.server --decode 1HGCM82633A004352
+uv run python -m vin_lookup_mcp.server --decode 1HGCM82633A004352
 ```
 
 For just the compact summary:
 
 ```bash
-uv run python -m vin_mcp.server --decode 1HGCM82633A004352 --summary-only
+uv run python -m vin_lookup_mcp.server --decode 1HGCM82633A004352 --summary-only
 ```
 
 You can also test the Canadian specifications endpoint directly:
 
 ```bash
-uv run python -m vin_mcp.server \
+uv run python -m vin_lookup_mcp.server \
   --canadian-specs-year 2011 \
   --canadian-specs-make Acura
 ```
@@ -118,7 +113,7 @@ uv run python -m vin_mcp.server \
 For just the compact summary:
 
 ```bash
-uv run python -m vin_mcp.server \
+uv run python -m vin_lookup_mcp.server \
   --canadian-specs-year 2011 \
   --canadian-specs-make Acura \
   --summary-only
@@ -127,34 +122,28 @@ uv run python -m vin_mcp.server \
 For a quick end-to-end CLI smoke test, run:
 
 ```bash
-./scripts/smoke_test.sh
+bash scripts/smoke_test.sh
 ```
 
-## Example MCP config
+## Project structure
 
-For an MCP client that launches local stdio servers, the config will look roughly like this:
-
-```json
-{
-  "mcpServers": {
-    "vin": {
-      "command": "/absolute/path/to/.venv/bin/python",
-      "args": ["-m", "vin_mcp.server"]
-    }
-  }
-}
+```text
+.
+├── pyproject.toml
+├── README.md
+├── scripts
+│   └── smoke_test.sh
+└── vin_lookup_mcp
+    ├── __init__.py
+    └── server.py
 ```
-
-Replace the Python path with your real project virtualenv path.
 
 ## Notes
 
 - vPIC is strongest for vehicles intended for sale or import into the United States.
 - Canadian specifications come from the dedicated vPIC `GetCanadianVehicleSpecifications` endpoint.
 - NHTSA notes that VIN decoding is for model years 1981 and newer.
-- The server currently advertises two tools through MCP tool metadata, and the MCP client or model decides when to call them.
-- This server implements the MCP stdio protocol directly, so it does not need the Python MCP SDK.
-- Because the project has no external dependencies, `uv sync` should work without internet once the local Python is available.
+- The MCP server uses the official Python MCP SDK via `FastMCP`.
 
 ## Why I built this
 
