@@ -22,25 +22,6 @@ JHMFA16586S012345
 JTDKB20U093123456
 ```
 
-## Install for Codex
-
-Assuming you already have `uv` and Python 3.14 installed:
-
-```bash
-git clone git@github.com:taimoorgit/vin-lookup-mcp.git
-cd vin-lookup-mcp
-uv sync
-codex mcp add vin-lookup-mcp -- "$(pwd)/.venv/bin/python" -m vin_lookup_mcp.server
-```
-
-You can confirm Codex sees it with:
-
-```bash
-codex mcp list
-```
-
-In Codex chat, `/mcp` should show `vin-lookup-mcp` with the two tools listed.
-
 ## Free API
 
 This project uses NHTSA's public vPIC API:
