@@ -130,4 +130,4 @@ bash scripts/smoke_test.sh
 
 I was shopping for cars and wanted to talk to ChatGPT about them by pasting the VIN number rather than the full model information.
 
-As an TechOps Eng at Stripe, we use a lot of MCP servers so I wanted to learn how to build my own. I only used Codex for this.
+At my job we use a lot of MCP servers so I wanted to learn how to build my own. I only used Codex for this.
